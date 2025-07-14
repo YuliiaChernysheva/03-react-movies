@@ -18,7 +18,6 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
     }
 
     onSubmit(query);
-    formRef.current?.reset();
   }
 
   return (
