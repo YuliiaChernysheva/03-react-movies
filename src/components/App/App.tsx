@@ -3,10 +3,11 @@ import type { Movie } from "../../types/movie";
 import fetchMovies from "../../services/movieService";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
-import Loader from "..//Loader/Loader";
+import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import toast, { Toaster } from "react-hot-toast";
+import css from "./App.module.css";
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -14,8 +15,8 @@ export default function App() {
   const [hasError, setHasError] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const handleSearch = async (formData: FormData) => {
-    const query = (formData.get("query") as string).trim();
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) return;
 
     setIsLoading(true);
     setHasError(false);
@@ -29,7 +30,6 @@ export default function App() {
       }
       setMovies(data);
     } catch {
-      toast.error("Error loading movies.");
       setHasError(true);
     } finally {
       setIsLoading(false);
@@ -45,20 +45,17 @@ export default function App() {
   };
 
   return (
-    <>
-      <Toaster position="top-right" />
-
-      <SearchBar onSubmit={handleSearch} />
-
+    <div className={css.app}>
+      <Toaster />
+      <SearchBar action={handleSearch} />
       {isLoading && <Loader />}
       {hasError && <ErrorMessage />}
       {!isLoading && !hasError && (
         <MovieGrid movies={movies} onSelect={handleSelect} />
       )}
-
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleClose} />
       )}
-    </>
+    </div>
   );
 }
